@@ -1,5 +1,5 @@
-import { Ref, createRef, useRef, useState } from "react";
-import Map, { Layer, MapEvent, MapLayerMouseEvent, MapRef } from "react-map-gl";
+import { createRef, useRef } from "react";
+import Map, { Layer, MapEvent, MapRef } from "react-map-gl";
 import Header from "./components/Header";
 
 function App() {

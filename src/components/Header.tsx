@@ -5,9 +5,7 @@ import { styled } from "@material-ui/styles";
 import { useColorModeContext } from "../context/ColorModeContext";
 import { Typography } from "@material-ui/core";
 
-type Props = {};
-
-const MaterialUISwitch = styled(Switch)(({ theme }: { theme: any }) => ({
+const MaterialUISwitch = styled(Switch)(() => ({
   width: 62,
   height: 34,
   padding: 7,

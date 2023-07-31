@@ -1,5 +1,5 @@
 import { ThemeProvider, colors, createTheme } from "@material-ui/core";
-import React, { ComponentProps } from "react";
+import React from "react";
 
 interface IColorModeContext {
   toggleColorMode: () => void;
