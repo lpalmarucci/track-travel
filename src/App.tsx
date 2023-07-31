@@ -1,5 +1,6 @@
 import { Ref, createRef, useRef, useState } from "react";
 import Map, { Layer, MapEvent, MapLayerMouseEvent, MapRef } from "react-map-gl";
+import Header from "./components/Header";
 
 function App() {
   const mapRef = createRef<MapRef>();
@@ -43,16 +44,17 @@ function App() {
   };
 
   return (
-    <div className="w-full flex h-screen">
+    <div className="w-full flex h-screen overflow-hidden">
+      <Header />
       <Map
         mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
         initialViewState={{
           longitude: 20,
           latitude: 20,
-          zoom: 2,
+          zoom: 1.2,
         }}
-        minZoom={2}
-        mapStyle={import.meta.env.VITE_MAPBOX_MAP_STYLE}
+        minZoom={1.2}
+        mapStyle={import.meta.env.VITE_MAPBOX_MAP_STYLE_DARK}
         ref={mapRef}
         onLoad={handleMapLoad}
       >
