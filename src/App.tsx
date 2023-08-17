@@ -10,7 +10,7 @@ function App() {
   const { mode } = useColorModeContext();
   const mapRef = createRef<MapRef>();
   const selectedStateId = useRef<number | null>(null);
-  const [mapStyle] = useMemo<string>(
+  const mapStyle = useMemo<string>(
     () =>
       mode === "light"
         ? import.meta.env.VITE_MAPBOX_MAP_STYLE_LIGHT
