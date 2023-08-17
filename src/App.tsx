@@ -1,15 +1,22 @@
-import { createRef, useRef, useState } from "react";
+import { createRef, useMemo, useRef } from "react";
 import Map, { Layer, MapEvent, MapRef } from "react-map-gl";
 import Header from "./components/Header";
 import { colors } from "@material-ui/core";
+import { useColorModeContext } from "./context/ColorMode/ColorModeContext.tsx";
 
 const defaultState: number[] = [46, 94, 48];
 
-const colorKeys: any = Object.keys(colors);
-
 function App() {
+  const { mode } = useColorModeContext();
   const mapRef = createRef<MapRef>();
   const selectedStateId = useRef<number | null>(null);
+  const [mapStyle] = useMemo<string>(
+    () =>
+      mode === "light"
+        ? import.meta.env.VITE_MAPBOX_MAP_STYLE_LIGHT
+        : import.meta.env.VITE_MAPBOX_MAP_STYLE_DARK,
+    [mode],
+  );
 
   const handleMapLoad = (e: MapEvent) => {
     // Add states
@@ -19,13 +26,13 @@ function App() {
     });
 
     //Pre color states that have already been selected
-    defaultState.forEach((stateId: any) => {
+    defaultState.forEach((stateId: number) => {
       e.target.setFeatureState(
         {
           source: "states",
           id: stateId,
         },
-        { hover: false, selected: true, color: colors.indigo[800] }
+        { hover: false, selected: true, color: colors.indigo[800] },
       );
     });
 
@@ -37,7 +44,7 @@ function App() {
         defaultState.push(parseInt(id));
         e.target.setFeatureState(
           { source: "states", id },
-          { hover: false, selected: true, color: colors.indigo[800] }
+          { hover: false, selected: true, color: colors.indigo[800] },
         );
       }
     });
@@ -47,12 +54,12 @@ function App() {
         if (selectedStateId.current !== null) {
           e.target.setFeatureState(
             { source: "states", id: selectedStateId.current },
-            { hover: false }
+            { hover: false },
           );
         }
         if (isNaN(parseInt(ev.features[0].id!.toString()))) {
           throw new Error(
-            "Checkout this id inside geoJSON file. ID " + ev.features[0].id
+            "Checkout this id inside geoJSON file. ID " + ev.features[0].id,
           );
         }
         const currentId = parseInt(ev.features[0].id!.toString());
@@ -61,7 +68,7 @@ function App() {
           { source: "states", id: currentId },
           {
             hover: true,
-          }
+          },
         );
       }
     });
@@ -72,7 +79,7 @@ function App() {
       if (selectedStateId.current !== null) {
         e.target.setFeatureState(
           { source: "states", id: selectedStateId.current },
-          { hover: false }
+          { hover: false },
         );
       }
       selectedStateId.current = null;
@@ -90,9 +97,14 @@ function App() {
           zoom: 1.2,
         }}
         minZoom={1.2}
-        mapStyle={import.meta.env.VITE_MAPBOX_MAP_STYLE_DARK}
+        mapStyle={mapStyle}
         ref={mapRef}
         onLoad={handleMapLoad}
+        reuseMaps={true}
+        fog={{
+          color: "rgb(186, 210, 235)", // Lower atmosphere
+          "horizon-blend": 0.1, // Atmosphere thickness
+        }}
       >
         <Layer
           type="fill"
