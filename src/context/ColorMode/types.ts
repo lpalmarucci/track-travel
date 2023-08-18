@@ -1,11 +1,11 @@
 export interface IColorModeContext {
   toggleColorMode: () => void;
-  mode: "light" | "dark";
+  mode: ColorScheme;
 }
 
 export enum ColorScheme {
-  LIGHT,
-  DARK,
+  LIGHT = "light",
+  DARK = "dark",
 }
 
 export const COLOR_SCHEME_KEY = "colorScheme";

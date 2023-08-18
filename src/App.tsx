@@ -103,7 +103,7 @@ function App() {
         reuseMaps={true}
         fog={{
           color: "rgb(186, 210, 235)", // Lower atmosphere
-          "horizon-blend": 0.1, // Atmosphere thickness
+          "horizon-blend": 0.08, // Atmosphere thickness
         }}
       >
         <Layer

@@ -5,5 +5,5 @@ export const saveValueToLocalStorage = (key: string, value: unknown) => {
 
 export const getValueFromLocalStorage = (key: string): unknown | undefined => {
   const value = localStorage.getItem(key);
-  return value && JSON.parse(value);
+  return value ? JSON.parse(value) : value;
 };

@@ -10,17 +10,18 @@ import {
   getValueFromLocalStorage,
   saveValueToLocalStorage,
 } from "../../utils/localStorage.tsx";
-import { COLOR_SCHEME_KEY, IColorModeContext } from "./types.ts";
+import { COLOR_SCHEME_KEY, ColorScheme, IColorModeContext } from "./types.ts";
 
 const ColorModeContext = React.createContext<IColorModeContext>({
   toggleColorMode: () => {},
-  mode: "light",
+  mode: ColorScheme.LIGHT,
 });
 
 function initColorScheme() {
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const savedScheme = getValueFromLocalStorage(COLOR_SCHEME_KEY);
-  return savedScheme ?? (prefersDark ? "dark" : "light");
+  if (savedScheme) return savedScheme as ColorScheme;
+  return prefersDark ? ColorScheme.DARK : ColorScheme.LIGHT;
 }
 
 export default function ToggleColorModeContext(props: {
@@ -61,16 +62,18 @@ export default function ToggleColorModeContext(props: {
             setShowReloadDialog(false);
             if (op) {
               setMode((prevMode) => {
-                if (prevMode === "light") {
-                  return "dark";
+                if (prevMode === ColorScheme.LIGHT) {
+                  return ColorScheme.DARK;
                 }
 
-                return "light";
+                return ColorScheme.LIGHT;
               });
 
               saveValueToLocalStorage(
                 COLOR_SCHEME_KEY,
-                mode === "light" ? "dark" : "light",
+                mode === ColorScheme.LIGHT
+                  ? ColorScheme.DARK
+                  : ColorScheme.LIGHT,
               );
               window.location.reload();
             }

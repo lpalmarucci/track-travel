@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Switch from "@material-ui/core/Switch";
 
 import { styled } from "@material-ui/styles";
 import { Typography } from "@material-ui/core";
 import { useColorModeContext } from "../context/ColorMode/ColorModeContext.tsx";
+import { ColorScheme } from "../context/ColorMode/types.ts";
 
 const MaterialUISwitch = styled(Switch)(() => ({
   width: 62,
@@ -53,17 +54,25 @@ const MaterialUISwitch = styled(Switch)(() => ({
 }));
 
 const Header = () => {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const colorMode = useColorModeContext();
+  const isDarkMode = useMemo<boolean>(
+    () => colorMode.mode === ColorScheme.DARK,
+    [colorMode.mode],
+  );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsDarkMode(event.target.checked);
+    // setIsDarkMode(event.target.checked);
     colorMode.toggleColorMode();
   };
 
   return (
     <header className="w-full flex items-center justify-end p-4 absolute left-0 top-0 z-[900] text-right">
-      <Typography variant="h2" className="grow" style={{ fontWeight: 600 }}>
+      <Typography
+        color="primary"
+        variant="h2"
+        className="grow"
+        style={{ fontWeight: 600 }}
+      >
         Track Travels
       </Typography>
       <span className="grow">
