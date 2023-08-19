@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Switch from "@material-ui/core/Switch";
 
 import { styled } from "@material-ui/styles";
@@ -60,8 +60,7 @@ const Header = () => {
     [colorMode.mode],
   );
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // setIsDarkMode(event.target.checked);
+  const handleChange = () => {
     colorMode.toggleColorMode();
   };
 
