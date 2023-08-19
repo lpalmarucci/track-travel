@@ -105,6 +105,7 @@ function App() {
           color: "rgb(186, 210, 235)", // Lower atmosphere
           "horizon-blend": 0.08, // Atmosphere thickness
         }}
+        cursor={"auto"}
       >
         <Layer
           type="fill"
