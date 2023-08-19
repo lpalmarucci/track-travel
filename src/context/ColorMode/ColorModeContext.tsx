@@ -2,6 +2,7 @@ import {
   colors,
   createTheme,
   CssBaseline,
+  responsiveFontSizes,
   ThemeProvider,
 } from "@material-ui/core";
 import React, { useState } from "react";
@@ -39,15 +40,17 @@ export default function ToggleColorModeContext(props: {
     [],
   );
 
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          type: mode,
-          primary: colors.indigo,
-        },
-      }),
-    [mode],
+  const theme = responsiveFontSizes(
+    React.useMemo(
+      () =>
+        createTheme({
+          palette: {
+            type: mode,
+            primary: colors.indigo,
+          },
+        }),
+      [mode],
+    ),
   );
 
   return (
