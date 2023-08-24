@@ -10,26 +10,20 @@ import ReloadPageDialog from "../../components/ReloadPageDialog.tsx";
 import {
   getValueFromLocalStorage,
   saveValueToLocalStorage,
-} from "../../utils/localStorage.tsx";
-import {
-  COLOR_SCHEME_KEY,
-  ColorScheme,
-  DEFAULT_COLOR,
-  IColorModeContext,
-} from "./types.ts";
+} from "../../utils/localStorage.ts";
+import { COLOR_SCHEME_KEY, DEFAULT_COLOR, IColorModeContext } from "./types.ts";
 
 const ColorModeContext = React.createContext<IColorModeContext>({
-  toggleColorMode: () => {},
-  mode: ColorScheme.LIGHT,
+  toggleDarkMode: () => {},
+  isDarkMode: false,
   countryColor: DEFAULT_COLOR,
   setCountryColor: () => {},
 });
 
-function initColorScheme() {
+function initColorScheme(): boolean {
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const savedScheme = getValueFromLocalStorage(COLOR_SCHEME_KEY);
-  if (savedScheme) return savedScheme as ColorScheme;
-  return prefersDark ? ColorScheme.DARK : ColorScheme.LIGHT;
+  const savedScheme = getValueFromLocalStorage<boolean>(COLOR_SCHEME_KEY);
+  return savedScheme ?? prefersDark;
 }
 
 export default function ToggleColorModeContext(props: {
@@ -38,8 +32,8 @@ export default function ToggleColorModeContext(props: {
   const [showReloadDialog, setShowReloadDialog] = useState<boolean>(false);
   const [countryColor, setCountryColor] =
     useState<IColorModeContext["countryColor"]>(DEFAULT_COLOR);
-  const [mode, setMode] =
-    React.useState<IColorModeContext["mode"]>(initColorScheme);
+  const [isDarkMode, setIsDarkMode] =
+    React.useState<IColorModeContext["isDarkMode"]>(initColorScheme);
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
@@ -54,19 +48,19 @@ export default function ToggleColorModeContext(props: {
       () =>
         createTheme({
           palette: {
-            type: mode,
+            type: isDarkMode ? "dark" : "light",
             primary: colors.indigo,
           },
         }),
-      [mode],
+      [isDarkMode],
     ),
   );
 
   return (
     <ColorModeContext.Provider
       value={{
-        toggleColorMode: colorMode.toggleColorMode,
-        mode,
+        toggleDarkMode: colorMode.toggleColorMode,
+        isDarkMode: isDarkMode,
         setCountryColor,
         countryColor,
       }}
@@ -78,20 +72,9 @@ export default function ToggleColorModeContext(props: {
           closeDialog={(op) => {
             setShowReloadDialog(false);
             if (op) {
-              setMode((prevMode) => {
-                if (prevMode === ColorScheme.LIGHT) {
-                  return ColorScheme.DARK;
-                }
+              setIsDarkMode((prevMode) => !prevMode);
 
-                return ColorScheme.LIGHT;
-              });
-
-              saveValueToLocalStorage(
-                COLOR_SCHEME_KEY,
-                mode === ColorScheme.LIGHT
-                  ? ColorScheme.DARK
-                  : ColorScheme.LIGHT,
-              );
+              saveValueToLocalStorage(COLOR_SCHEME_KEY, isDarkMode);
               window.location.reload();
             }
           }}

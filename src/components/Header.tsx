@@ -1,10 +1,7 @@
-import { useMemo } from "react";
 import Switch from "@material-ui/core/Switch";
-
 import { styled } from "@material-ui/styles";
 import { Typography } from "@material-ui/core";
 import { useColorModeContext } from "../context/ColorMode/ColorModeContext.tsx";
-import { ColorScheme } from "../context/ColorMode/types.ts";
 import { ColorPicker } from "@wellbees/color-picker-input";
 
 const MaterialUISwitch = styled(Switch)(() => ({
@@ -56,18 +53,6 @@ const MaterialUISwitch = styled(Switch)(() => ({
 
 const Header = () => {
   const colorMode = useColorModeContext();
-  const isDarkMode = useMemo<boolean>(
-    () => colorMode.mode === ColorScheme.DARK,
-    [colorMode.mode],
-  );
-
-  const handleChange = () => {
-    colorMode.toggleColorMode();
-  };
-
-  // const onColorChange = (color: Color) => {
-  //   colorMode.setCountryColor(color.css.backgroundColor! as string);
-  // };
 
   return (
     <header className="w-full grid grid-cols-3 items-center p-4 absolute left-0 top-0 z-[900] text-center">
@@ -86,7 +71,10 @@ const Header = () => {
         Track Travels
       </Typography>
       <span className="grow">
-        <MaterialUISwitch checked={isDarkMode} onChange={handleChange} />
+        <MaterialUISwitch
+          checked={colorMode.isDarkMode}
+          onChange={colorMode.toggleDarkMode}
+        />
       </span>
     </header>
   );

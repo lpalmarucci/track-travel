@@ -3,7 +3,7 @@ export const saveValueToLocalStorage = (key: string, value: unknown) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
 
-export const getValueFromLocalStorage = (key: string): unknown | undefined => {
+export const getValueFromLocalStorage = <T>(key: string): T | undefined => {
   const value = localStorage.getItem(key);
-  return value ? JSON.parse(value) : value;
+  return value ? (JSON.parse(value) as T) : undefined;
 };

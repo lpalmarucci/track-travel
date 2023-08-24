@@ -7,15 +7,15 @@ import { useColorModeContext } from "./context/ColorMode/ColorModeContext.tsx";
 const defaultState: number[] = [46, 94, 48];
 
 function App() {
-  const { mode } = useColorModeContext();
+  const { isDarkMode } = useColorModeContext();
   const mapRef = createRef<MapRef>();
   const selectedStateId = useRef<number | null>(null);
   const mapStyle = useMemo<string>(
     () =>
-      mode === "light"
-        ? import.meta.env.VITE_MAPBOX_MAP_STYLE_LIGHT
-        : import.meta.env.VITE_MAPBOX_MAP_STYLE_DARK,
-    [mode],
+      isDarkMode
+        ? import.meta.env.VITE_MAPBOX_MAP_STYLE_DARK
+        : import.meta.env.VITE_MAPBOX_MAP_STYLE_LIGHT,
+    [isDarkMode],
   );
 
   const handleMapLoad = (e: MapEvent) => {
