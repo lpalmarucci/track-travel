@@ -70,8 +70,9 @@ const Header = () => {
   // };
 
   return (
-    <header className="w-full flex items-center justify-end p-4 absolute left-0 top-0 z-[900] text-right">
+    <header className="w-full grid grid-cols-3 items-center p-4 absolute left-0 top-0 z-[900] text-center">
       <ColorPicker
+        className={`text-white`}
         inputType="input"
         value={colorMode.countryColor}
         onChange={(color: string) => colorMode.setCountryColor(color)}
