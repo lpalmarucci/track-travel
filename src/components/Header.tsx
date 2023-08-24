@@ -5,6 +5,7 @@ import { styled } from "@material-ui/styles";
 import { Typography } from "@material-ui/core";
 import { useColorModeContext } from "../context/ColorMode/ColorModeContext.tsx";
 import { ColorScheme } from "../context/ColorMode/types.ts";
+import { ColorPicker } from "@wellbees/color-picker-input";
 
 const MaterialUISwitch = styled(Switch)(() => ({
   width: 62,
@@ -64,8 +65,17 @@ const Header = () => {
     colorMode.toggleColorMode();
   };
 
+  // const onColorChange = (color: Color) => {
+  //   colorMode.setCountryColor(color.css.backgroundColor! as string);
+  // };
+
   return (
     <header className="w-full flex items-center justify-end p-4 absolute left-0 top-0 z-[900] text-right">
+      <ColorPicker
+        inputType="input"
+        value={colorMode.countryColor}
+        onChange={(color: string) => colorMode.setCountryColor(color)}
+      />
       <Typography
         color="primary"
         variant="h2"

@@ -11,11 +11,18 @@ import {
   getValueFromLocalStorage,
   saveValueToLocalStorage,
 } from "../../utils/localStorage.tsx";
-import { COLOR_SCHEME_KEY, ColorScheme, IColorModeContext } from "./types.ts";
+import {
+  COLOR_SCHEME_KEY,
+  ColorScheme,
+  DEFAULT_COLOR,
+  IColorModeContext,
+} from "./types.ts";
 
 const ColorModeContext = React.createContext<IColorModeContext>({
   toggleColorMode: () => {},
   mode: ColorScheme.LIGHT,
+  countryColor: DEFAULT_COLOR,
+  setCountryColor: () => {},
 });
 
 function initColorScheme() {
@@ -29,6 +36,8 @@ export default function ToggleColorModeContext(props: {
   children: React.ReactNode;
 }) {
   const [showReloadDialog, setShowReloadDialog] = useState<boolean>(false);
+  const [countryColor, setCountryColor] =
+    useState<IColorModeContext["countryColor"]>(DEFAULT_COLOR);
   const [mode, setMode] =
     React.useState<IColorModeContext["mode"]>(initColorScheme);
   const colorMode = React.useMemo(
@@ -55,7 +64,12 @@ export default function ToggleColorModeContext(props: {
 
   return (
     <ColorModeContext.Provider
-      value={{ toggleColorMode: colorMode.toggleColorMode, mode }}
+      value={{
+        toggleColorMode: colorMode.toggleColorMode,
+        mode,
+        setCountryColor,
+        countryColor,
+      }}
     >
       <ThemeProvider theme={theme}>
         <CssBaseline />

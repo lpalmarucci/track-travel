@@ -12,6 +12,7 @@
   "dependencies": {
     "@material-ui/core": "^4.12.4",
     "@types/mapbox-gl": "^2.7.12",
+    "@wellbees/color-picker-input": "^1.0.1",
     "mapbox-gl": "^2.15.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
