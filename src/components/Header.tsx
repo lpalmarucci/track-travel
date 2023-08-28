@@ -2,7 +2,10 @@ import Switch from "@material-ui/core/Switch";
 import { styled } from "@material-ui/styles";
 import { Typography } from "@material-ui/core";
 import { useColorModeContext } from "../context/ColorMode/ColorModeContext.tsx";
+// @ts-ignore
 import { ColorPicker } from "@wellbees/color-picker-input";
+import { saveValueToLocalStorage } from "../utils/localStorage.ts";
+import { COLOR_SCHEME_KEY } from "../context/ColorMode/types.ts";
 
 const MaterialUISwitch = styled(Switch)(() => ({
   width: 62,
@@ -60,7 +63,10 @@ const Header = () => {
         className={`text-white`}
         inputType="input"
         value={colorMode.countryColor}
-        onChange={(color: string) => colorMode.setCountryColor(color)}
+        onChange={(color: string) => {
+          colorMode.setCountryColor(color);
+          saveValueToLocalStorage(COLOR_SCHEME_KEY, color);
+        }}
       />
       <Typography
         color="primary"

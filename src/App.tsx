@@ -1,13 +1,30 @@
-import { createRef, useMemo, useRef } from "react";
+import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import Map, { Layer, MapEvent, MapRef } from "react-map-gl";
 import Header from "./components/Header";
-import { colors } from "@material-ui/core";
 import { useColorModeContext } from "./context/ColorMode/ColorModeContext.tsx";
+import { adjustColor } from "./utils/color.ts";
+import { colors } from "@material-ui/core";
+import {
+  getValueFromLocalStorage,
+  saveValueToLocalStorage,
+} from "./utils/localStorage.ts";
+import { COLOR_SCHEME_KEY, DEFAULT_COLOR } from "./context/ColorMode/types.ts";
 
-const defaultState: number[] = [46, 94, 48];
+type MarkedCountry = {
+  id: number;
+  color: string;
+};
+
+const defaultState: MarkedCountry[] = [
+  { id: 46, color: colors.orange[900].toString() },
+  { id: 94, color: colors.lime[900].toString() },
+  { id: 48, color: colors.teal[900].toString() },
+];
+
+const DEFAULT_STORAGE_KEY_COUNTRIES = "countries";
 
 function App() {
-  const { isDarkMode } = useColorModeContext();
+  const { isDarkMode, countryColor } = useColorModeContext();
   const mapRef = createRef<MapRef>();
   const selectedStateId = useRef<number | null>(null);
   const mapStyle = useMemo<string>(
@@ -16,6 +33,16 @@ function App() {
         ? import.meta.env.VITE_MAPBOX_MAP_STYLE_DARK
         : import.meta.env.VITE_MAPBOX_MAP_STYLE_LIGHT,
     [isDarkMode],
+  );
+  const [markedCountries, setMarkedCountries] = useState<MarkedCountry[]>(
+    getValueFromLocalStorage<MarkedCountry[]>(DEFAULT_STORAGE_KEY_COUNTRIES) ??
+      defaultState,
+  );
+
+  useEffect(
+    () =>
+      saveValueToLocalStorage(DEFAULT_STORAGE_KEY_COUNTRIES, markedCountries),
+    [markedCountries],
   );
 
   const handleMapLoad = (e: MapEvent) => {
@@ -26,28 +53,49 @@ function App() {
     });
 
     //Pre color states that have already been selected
-    defaultState.forEach((stateId: number) => {
+    markedCountries.forEach((country) => {
       e.target.setFeatureState(
         {
           source: "states",
-          id: stateId,
+          id: country.id,
         },
-        { hover: false, selected: true, color: colors.indigo[800] },
+        { hover: false, selected: true, color: country.color },
       );
     });
 
     //Add listeners to the map
 
-    e.target.on("click", "state-fills", (ev) => {
-      if (ev.features && ev.features.length > 0) {
-        const id: string = ev.features[0].id!.toString();
-        defaultState.push(parseInt(id));
-        e.target.setFeatureState(
-          { source: "states", id },
-          { hover: false, selected: true, color: colors.indigo[800] },
-        );
-      }
-    });
+    e.target.on(
+      "click",
+      "state-fills",
+      (
+        ev: mapboxgl.MapMouseEvent & {
+          features?: mapboxgl.MapboxGeoJSONFeature[] | undefined;
+        } & mapboxgl.EventData,
+      ) => {
+        console.log("click");
+        if (ev.features && ev.features.length > 0) {
+          const id: string | undefined = ev.features[0].id?.toString();
+          if (!id) return;
+          const color =
+            getValueFromLocalStorage<string>(COLOR_SCHEME_KEY) ?? DEFAULT_COLOR;
+          ev.target.setFeatureState(
+            { source: "states", id },
+            { hover: false, selected: true, color },
+          );
+          setMarkedCountries((prevCountries) => {
+            let res = prevCountries.slice();
+            const countryIdx = prevCountries.findIndex((c) => c.id === +id);
+            if (countryIdx !== -1) {
+              res.splice(countryIdx, 1);
+            }
+            res.push({ id: +id, color });
+
+            return res;
+          });
+        }
+      },
+    );
 
     e.target.on("mousemove", "state-fills", (ev) => {
       if (ev.features && ev.features.length > 0) {
@@ -57,12 +105,12 @@ function App() {
             { hover: false },
           );
         }
-        if (isNaN(parseInt(ev.features[0].id!.toString()))) {
-          throw new Error(
-            "Checkout this id inside geoJSON file. ID " + ev.features[0].id,
-          );
+        const id: string | undefined = ev.features[0].id?.toString();
+        if (!id) return;
+        if (isNaN(parseInt(id))) {
+          throw new Error("Checkout this id inside geoJSON file. ID " + id);
         }
-        const currentId = parseInt(ev.features[0].id!.toString());
+        const currentId = parseInt(id);
         selectedStateId.current = currentId;
         e.target.setFeatureState(
           { source: "states", id: currentId },
@@ -101,6 +149,7 @@ function App() {
         ref={mapRef}
         onLoad={handleMapLoad}
         reuseMaps={true}
+        interactive={true}
         fog={{
           color: "rgb(186, 210, 235)", // Lower atmosphere
           "horizon-blend": 0.08, // Atmosphere thickness
@@ -116,10 +165,11 @@ function App() {
             "fill-color": [
               "case",
               ["boolean", ["feature-state", "hover"], false],
-              "#627BC1",
+              adjustColor(countryColor, 50),
               ["boolean", ["feature-state", "selected"], false],
-              ["string", ["feature-state", "color"], "#FFF"],
-              "#627BC1",
+              // ["string", ["feature-state", "color"], "#FFF"],
+              ["string", ["feature-state", "color"], countryColor],
+              colors.deepPurple[900],
             ],
             "fill-opacity": [
               "case",

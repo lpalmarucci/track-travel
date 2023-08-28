@@ -9,10 +9,14 @@ import {
 
 function ReloadPageDialog({
   open,
-  closeDialog,
+  onCloseDialog,
+  onConfirm = () => {},
+  onCancel = () => {},
 }: {
   open: boolean;
-  closeDialog(op: boolean): void;
+  onCloseDialog(op: boolean): void;
+  onConfirm?(): void;
+  onCancel?(): void;
 }) {
   return (
     <Dialog
@@ -27,8 +31,21 @@ function ReloadPageDialog({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => closeDialog(false)}>Cancel</Button>
-        <Button onClick={() => closeDialog(true)} autoFocus>
+        <Button
+          onClick={() => {
+            onCloseDialog(false);
+            onCancel();
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={() => {
+            onCloseDialog(true);
+            onConfirm();
+          }}
+          autoFocus
+        >
           Ok
         </Button>
       </DialogActions>
