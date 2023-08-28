@@ -5,7 +5,7 @@ import {
   responsiveFontSizes,
   ThemeProvider,
 } from "@material-ui/core";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import ReloadPageDialog from "../../components/ReloadPageDialog.tsx";
 import {
   getValueFromLocalStorage,
