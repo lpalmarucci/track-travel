@@ -5,7 +5,7 @@ import {
   responsiveFontSizes,
   ThemeProvider,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ReloadPageDialog from "../../components/ReloadPageDialog.tsx";
 import {
   getValueFromLocalStorage,
@@ -16,7 +16,8 @@ import { COLOR_SCHEME_KEY, DEFAULT_COLOR, IColorModeContext } from "./types.ts";
 const ColorModeContext = React.createContext<IColorModeContext>({
   toggleDarkMode: () => {},
   isDarkMode: false,
-  countryColor: DEFAULT_COLOR,
+  countryColor:
+    getValueFromLocalStorage<string>(COLOR_SCHEME_KEY) ?? DEFAULT_COLOR,
   setCountryColor: () => {},
 });
 
@@ -30,10 +31,13 @@ export default function ToggleColorModeContext(props: {
   children: React.ReactNode;
 }) {
   const [showReloadDialog, setShowReloadDialog] = useState<boolean>(false);
-  const [countryColor, setCountryColor] =
-    useState<IColorModeContext["countryColor"]>(DEFAULT_COLOR);
-  const [isDarkMode, setIsDarkMode] =
-    React.useState<IColorModeContext["isDarkMode"]>(initColorScheme);
+  const [countryColor, setCountryColor] = useState<
+    IColorModeContext["countryColor"]
+  >(getValueFromLocalStorage<string>("color") ?? DEFAULT_COLOR);
+  const isDarkMode: IColorModeContext["isDarkMode"] = useMemo(
+    initColorScheme,
+    [],
+  );
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
@@ -69,13 +73,11 @@ export default function ToggleColorModeContext(props: {
         <CssBaseline />
         <ReloadPageDialog
           open={showReloadDialog}
-          closeDialog={(op) => {
+          onCloseDialog={(op) => {
             setShowReloadDialog(false);
             if (op) {
-              setIsDarkMode((prevMode) => !prevMode);
-
-              saveValueToLocalStorage(COLOR_SCHEME_KEY, isDarkMode);
               window.location.reload();
+              saveValueToLocalStorage(COLOR_SCHEME_KEY, !isDarkMode);
             }
           }}
         />

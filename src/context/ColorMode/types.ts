@@ -9,4 +9,5 @@ export interface IColorModeContext {
 }
 
 export const COLOR_SCHEME_KEY = "colorScheme";
+
 export const DEFAULT_COLOR = colors.indigo[900];
