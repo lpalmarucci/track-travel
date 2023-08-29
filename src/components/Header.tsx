@@ -1,6 +1,6 @@
 import Switch from "@material-ui/core/Switch";
 import { styled } from "@material-ui/styles";
-import { Typography } from "@material-ui/core";
+import { Typography, useMediaQuery, useTheme } from "@material-ui/core";
 import { useColorModeContext } from "../context/ColorMode/ColorModeContext.tsx";
 // @ts-ignore
 import { ColorPicker } from "@wellbees/color-picker-input";
@@ -56,11 +56,17 @@ const MaterialUISwitch = styled(Switch)(() => ({
 
 const Header = () => {
   const colorMode = useColorModeContext();
-
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
+  console.log({ isMobile });
   return (
-    <header className="w-full grid grid-cols-3 items-center p-4 absolute left-0 top-0 z-[900] text-center">
+    <header
+      className={`w-full grid ${
+        isMobile ? "grid-cols-2 grid-rows-2 align-middle" : "grid-cols-3"
+      } items-center p-4 absolute left-0 top-0 z-[900] text-center`}
+    >
       <ColorPicker
-        className={`text-white`}
+        className={`text-white max-w-full`}
         inputType="input"
         value={colorMode.countryColor}
         onChange={(color: string) => {
@@ -71,12 +77,12 @@ const Header = () => {
       <Typography
         color="primary"
         variant="h2"
-        className="grow"
+        className={`${isMobile ? "row-start-1 col-start-1 col-end-3" : ""}`}
         style={{ fontWeight: 600 }}
       >
         Track Travels
       </Typography>
-      <span className="grow">
+      <span className={`${isMobile ? "w-fit justify-self-end" : ""}`}>
         <MaterialUISwitch
           checked={colorMode.isDarkMode}
           onChange={colorMode.toggleDarkMode}

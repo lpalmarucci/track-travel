@@ -134,7 +134,7 @@ function App() {
   };
 
   return (
-    <div className="w-full flex h-screen overflow-hidden">
+    <div className="w-full h-[100dvh] flex overflow-hidden">
       <Header />
       <Map
         mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}

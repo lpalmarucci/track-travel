@@ -21,3 +21,8 @@
 #rc-editable-input-2{
   color: white !important;
 }
+
+.colorPickerArea,
+.colorPickerArea > div > input{
+  max-width: 100%
+}
