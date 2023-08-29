@@ -8,20 +8,16 @@ import {
   getValueFromLocalStorage,
   saveValueToLocalStorage,
 } from "./utils/localStorage.ts";
-import { COLOR_SCHEME_KEY, DEFAULT_COLOR } from "./context/ColorMode/types.ts";
+import {
+  COLOR_SCHEME_KEY,
+  DEFAULT_COLOR,
+  DEFAULT_STORAGE_KEY_COUNTRIES,
+} from "./context/ColorMode/types.ts";
 
 type MarkedCountry = {
   id: number;
   color: string;
 };
-
-const defaultState: MarkedCountry[] = [
-  { id: 46, color: colors.orange[900].toString() },
-  { id: 94, color: colors.lime[900].toString() },
-  { id: 48, color: colors.teal[900].toString() },
-];
-
-const DEFAULT_STORAGE_KEY_COUNTRIES = "countries";
 
 function App() {
   const { isDarkMode, countryColor } = useColorModeContext();
@@ -36,7 +32,7 @@ function App() {
   );
   const [markedCountries, setMarkedCountries] = useState<MarkedCountry[]>(
     getValueFromLocalStorage<MarkedCountry[]>(DEFAULT_STORAGE_KEY_COUNTRIES) ??
-      defaultState,
+      [],
   );
 
   useEffect(
@@ -63,8 +59,6 @@ function App() {
       );
     });
 
-    //Add listeners to the map
-
     e.target.on(
       "click",
       "state-fills",
@@ -73,18 +67,23 @@ function App() {
           features?: mapboxgl.MapboxGeoJSONFeature[] | undefined;
         } & mapboxgl.EventData,
       ) => {
-        console.log("click");
         if (ev.features && ev.features.length > 0) {
           const id: string | undefined = ev.features[0].id?.toString();
           if (!id) return;
           const color =
             getValueFromLocalStorage<string>(COLOR_SCHEME_KEY) ?? DEFAULT_COLOR;
+
+          const { selected: alreadySelected } = ev.target.getFeatureState({
+            source: "states",
+            id,
+          });
+
           ev.target.setFeatureState(
             { source: "states", id },
-            { hover: false, selected: true, color },
+            { hover: false, selected: !alreadySelected, color },
           );
           setMarkedCountries((prevCountries) => {
-            let res = prevCountries.slice();
+            const res = prevCountries.slice();
             const countryIdx = prevCountries.findIndex((c) => c.id === +id);
             if (countryIdx !== -1) {
               res.splice(countryIdx, 1);
@@ -167,7 +166,6 @@ function App() {
               ["boolean", ["feature-state", "hover"], false],
               adjustColor(countryColor, 50),
               ["boolean", ["feature-state", "selected"], false],
-              // ["string", ["feature-state", "color"], "#FFF"],
               ["string", ["feature-state", "color"], countryColor],
               colors.deepPurple[900],
             ],
