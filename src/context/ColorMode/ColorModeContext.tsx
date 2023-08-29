@@ -5,13 +5,18 @@ import {
   responsiveFontSizes,
   ThemeProvider,
 } from "@material-ui/core";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReloadPageDialog from "../../components/ReloadPageDialog.tsx";
 import {
   getValueFromLocalStorage,
   saveValueToLocalStorage,
 } from "../../utils/localStorage.ts";
-import { COLOR_SCHEME_KEY, DEFAULT_COLOR, IColorModeContext } from "./types.ts";
+import {
+  COLOR_SCHEME_KEY,
+  DARK_MODE_KEY,
+  DEFAULT_COLOR,
+  IColorModeContext,
+} from "./types.ts";
 
 const ColorModeContext = React.createContext<IColorModeContext>({
   toggleDarkMode: () => {},
@@ -23,7 +28,7 @@ const ColorModeContext = React.createContext<IColorModeContext>({
 
 function initColorScheme(): boolean {
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const savedScheme = getValueFromLocalStorage<boolean>(COLOR_SCHEME_KEY);
+  const savedScheme = getValueFromLocalStorage<boolean>(DARK_MODE_KEY);
   return savedScheme ?? prefersDark;
 }
 
@@ -33,11 +38,9 @@ export default function ToggleColorModeContext(props: {
   const [showReloadDialog, setShowReloadDialog] = useState<boolean>(false);
   const [countryColor, setCountryColor] = useState<
     IColorModeContext["countryColor"]
-  >(getValueFromLocalStorage<string>("color") ?? DEFAULT_COLOR);
-  const isDarkMode: IColorModeContext["isDarkMode"] = useMemo(
-    initColorScheme,
-    [],
-  );
+  >(getValueFromLocalStorage<string>(COLOR_SCHEME_KEY) ?? DEFAULT_COLOR);
+  const [isDarkMode, setIsDarkMode] = React.useState<boolean>(initColorScheme);
+
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
@@ -60,6 +63,10 @@ export default function ToggleColorModeContext(props: {
     ),
   );
 
+  useEffect(() => {
+    saveValueToLocalStorage(DARK_MODE_KEY, isDarkMode);
+  }, [isDarkMode]);
+
   return (
     <ColorModeContext.Provider
       value={{
@@ -75,10 +82,10 @@ export default function ToggleColorModeContext(props: {
           open={showReloadDialog}
           onCloseDialog={(op) => {
             setShowReloadDialog(false);
-            if (op) {
-              window.location.reload();
-              saveValueToLocalStorage(COLOR_SCHEME_KEY, !isDarkMode);
-            }
+            if (op) window.location.reload();
+          }}
+          onConfirm={() => {
+            setIsDarkMode((prev) => !prev);
           }}
         />
         {props.children}
