@@ -58,7 +58,7 @@ const Header = () => {
   const colorMode = useColorModeContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
-  console.log({ isMobile });
+
   return (
     <header
       className={`w-full grid ${
